@@ -6,6 +6,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "USB30Y_USD": {
@@ -15,6 +16,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.20"
   },
   "USB05Y_USD": {
@@ -24,6 +26,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.20"
   },
   "NZD_JPY": {
@@ -33,6 +36,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "EUR_CZK": {
@@ -42,6 +46,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "XAU_AUD": {
@@ -51,6 +56,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "WHEAT_USD": {
@@ -60,6 +66,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "CAD_SGD": {
@@ -69,6 +76,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "AUD_NZD": {
@@ -78,6 +86,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "EUR_GBP": {
@@ -87,6 +96,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.03333333333333"
   },
   "FR40_EUR": {
@@ -96,6 +106,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.05"
   },
   "CHF_HKD": {
@@ -105,6 +116,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.1"
   },
   "US30_USD": {
@@ -114,6 +126,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.05"
   },
   "EUR_NOK": {
@@ -123,6 +136,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "XAU_USD": {
@@ -132,6 +146,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "JP225Y_JPY": {
@@ -141,6 +156,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "UK100_GBP": {
@@ -150,6 +166,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.05"
   },
   "EUR_HUF": {
@@ -159,6 +176,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "GBP_NZD": {
@@ -168,6 +186,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "SUGAR_USD": {
@@ -177,6 +196,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "EUR_PLN": {
@@ -186,6 +206,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "DE10YB_EUR": {
@@ -195,6 +216,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.20"
   },
   "GBP_PLN": {
@@ -204,6 +226,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "CH20_CHF": {
@@ -213,6 +236,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.1"
   },
   "CAD_HKD": {
@@ -222,6 +246,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.1"
   },
   "XAG_CHF": {
@@ -231,6 +256,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "USD_CHF": {
@@ -240,6 +266,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.04"
   },
   "XAG_HKD": {
@@ -249,6 +276,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.1"
   },
   "AUD_HKD": {
@@ -258,6 +286,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.1"
   },
   "ESPIX_EUR": {
@@ -267,6 +296,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.1"
   },
   "NZD_CHF": {
@@ -276,6 +306,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "AUD_CHF": {
@@ -285,6 +316,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "GBP_CHF": {
@@ -294,6 +326,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.04"
   },
   "USD_THB": {
@@ -303,6 +336,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "XAU_JPY": {
@@ -312,6 +346,7 @@
     "pipLocation": 1,
     "displayPrecision": 0,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "XAU_HKD": {
@@ -321,6 +356,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "GBP_CAD": {
@@ -330,6 +366,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.03333333333333"
   },
   "EUR_HKD": {
@@ -339,6 +376,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.1"
   },
   "CHF_JPY": {
@@ -348,6 +386,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.04"
   },
   "GBP_HKD": {
@@ -357,6 +396,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.1"
   },
   "EUR_NZD": {
@@ -366,6 +406,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "XAG_AUD": {
@@ -375,6 +416,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "WTICO_USD": {
@@ -384,6 +426,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "XAG_NZD": {
@@ -393,6 +436,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "AUD_SGD": {
@@ -402,6 +446,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "EUR_JPY": {
@@ -411,6 +456,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.03333333333333"
   },
   "EUR_TRY": {
@@ -420,6 +466,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.25"
   },
   "USD_JPY": {
@@ -429,6 +476,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.03333333333333"
   },
   "SGD_JPY": {
@@ -438,6 +486,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "GBP_ZAR": {
@@ -447,6 +496,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "XAG_JPY": {
@@ -456,6 +506,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "ZAR_JPY": {
@@ -465,6 +516,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "CN50_USD": {
@@ -474,6 +526,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.10"
   },
   "AUD_JPY": {
@@ -483,6 +536,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "NZD_USD": {
@@ -492,6 +546,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "EUR_SEK": {
@@ -501,6 +556,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "USD_SGD": {
@@ -510,6 +566,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "US2000_USD": {
@@ -519,6 +576,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.10"
   },
   "HKD_JPY": {
@@ -528,6 +586,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.1"
   },
   "USD_CAD": {
@@ -537,6 +596,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.03333333333333"
   },
   "AUD_USD": {
@@ -546,6 +606,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "USB10Y_USD": {
@@ -555,6 +616,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.20"
   },
   "XAG_GBP": {
@@ -564,6 +626,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "HK33_HKD": {
@@ -573,6 +636,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.10"
   },
   "NZD_SGD": {
@@ -582,6 +646,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "SPX500_USD": {
@@ -591,6 +656,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.05"
   },
   "GBP_JPY": {
@@ -600,6 +666,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.03333333333333"
   },
   "USD_TRY": {
@@ -609,6 +676,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.25"
   },
   "USD_NOK": {
@@ -618,6 +686,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "USB02Y_USD": {
@@ -627,6 +696,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.20"
   },
   "XCU_USD": {
@@ -636,6 +706,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "XAG_EUR": {
@@ -645,6 +716,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "SGD_CHF": {
@@ -654,6 +726,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "USD_CNH": {
@@ -663,6 +736,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "XAU_SGD": {
@@ -672,6 +746,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "CORN_USD": {
@@ -681,6 +756,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "EUR_CHF": {
@@ -690,6 +766,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.04"
   },
   "EUR_SGD": {
@@ -699,6 +776,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "NZD_CAD": {
@@ -708,6 +786,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "CHINAH_HKD": {
@@ -717,6 +796,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.1"
   },
   "GBP_AUD": {
@@ -726,6 +806,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "USD_PLN": {
@@ -735,6 +816,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "EUR_ZAR": {
@@ -744,6 +826,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "NAS100_USD": {
@@ -753,6 +836,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.05"
   },
   "TRY_JPY": {
@@ -762,6 +846,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.25"
   },
   "SOYBN_USD": {
@@ -771,6 +856,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "XAU_XAG": {
@@ -780,6 +866,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.1"
   },
   "AU200_AUD": {
@@ -789,6 +876,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.05"
   },
   "XAU_CAD": {
@@ -798,6 +886,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "EU50_EUR": {
@@ -807,6 +896,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.05"
   },
   "EUR_AUD": {
@@ -816,6 +906,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "NL25_EUR": {
@@ -825,6 +916,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.10"
   },
   "USD_ZAR": {
@@ -834,6 +926,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "CAD_JPY": {
@@ -843,6 +936,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.03333333333333"
   },
   "NZD_HKD": {
@@ -852,6 +946,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.1"
   },
   "XAU_NZD": {
@@ -861,6 +956,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "USD_CZK": {
@@ -870,6 +966,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "USD_DKK": {
@@ -879,6 +976,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "XAU_GBP": {
@@ -888,6 +986,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "USD_SEK": {
@@ -897,6 +996,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "GBP_SGD": {
@@ -906,6 +1006,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "EUR_DKK": {
@@ -915,6 +1016,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.1"
   },
   "BCO_USD": {
@@ -924,6 +1026,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "CHF_ZAR": {
@@ -933,6 +1036,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "CAD_CHF": {
@@ -942,6 +1046,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.04"
   },
   "XAG_SGD": {
@@ -951,6 +1056,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "XAU_CHF": {
@@ -960,6 +1066,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "GBP_USD": {
@@ -969,6 +1076,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.03333333333333"
   },
   "USD_MXN": {
@@ -978,6 +1086,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "USD_HUF": {
@@ -987,6 +1096,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "JP225_USD": {
@@ -996,6 +1106,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.05"
   },
   "USD_HKD": {
@@ -1005,6 +1116,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.1"
   },
   "EUR_USD": {
@@ -1014,6 +1126,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.03333333333333"
   },
   "SG30_SGD": {
@@ -1023,6 +1136,7 @@
     "pipLocation": -1,
     "displayPrecision": 2,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.10"
   },
   "EUR_CAD": {
@@ -1032,6 +1146,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.03333333333333"
   },
   "XAG_CAD": {
@@ -1041,6 +1156,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "XPT_USD": {
@@ -1050,6 +1166,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "XAU_EUR": {
@@ -1059,6 +1176,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   },
   "DE30_EUR": {
@@ -1068,6 +1186,7 @@
     "pipLocation": 0,
     "displayPrecision": 1,
     "tradeUnitsPrecision": 1,
+    "minimumTradeSize": "0.1",
     "marginRate": "0.05"
   },
   "UK10YB_GBP": {
@@ -1077,6 +1196,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.20"
   },
   "XPD_USD": {
@@ -1086,6 +1206,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "NATGAS_USD": {
@@ -1095,6 +1216,7 @@
     "pipLocation": -2,
     "displayPrecision": 3,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.10"
   },
   "AUD_CAD": {
@@ -1104,6 +1226,7 @@
     "pipLocation": -4,
     "displayPrecision": 5,
     "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1",
     "marginRate": "0.05"
   }
 }

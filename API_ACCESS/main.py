@@ -7,4 +7,5 @@ if __name__ == '__main__':
     instrumentCollection.CreateFile(api.get_account_instruments(), "./data")
     instrumentCollection.LoadInstruments("./data")
     instrumentCollection.PrintInstruments()
+    print(api.get_account_summary())
     

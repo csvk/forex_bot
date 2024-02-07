@@ -4,7 +4,7 @@ from models.instrument import Instrument
 class InstrumentCollection:
     FILENAME = "instruments.json"
     API_KEYS = ['name', 'type', 'displayName', 'pipLocation',
-         'displayPrecision', 'tradeUnitsPrecision', 'marginRate']
+         'displayPrecision', 'tradeUnitsPrecision', 'minimumTradeSize', 'marginRate']
 
     def __init__(self):
         self.instruments_dict = {}

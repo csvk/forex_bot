@@ -1,6 +1,14 @@
-API_KEY = "xx"
-ACCOUNT_ID = "xx"
-OANDA_URL = "https://api-fxpractice.oanda.com/v3"
+import json
+API_CREDS_FILE = 'D:/OneDrive/Studies/forex_python/api_creds.json'
+
+# Load API credentials
+with open(API_CREDS_FILE) as json_file:
+    apicreds = json.load(json_file)
+
+
+API_KEY = apicreds['API_KEY']
+ACCOUNT_ID = apicreds['ACCOUNT_ID']
+OANDA_URL = apicreds['OANDA_URL']
 
 SELL = -1
 BUY = 1
