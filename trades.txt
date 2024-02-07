@@ -1,0 +1,141 @@
+### ---- open_trade.py ----- ###
+
+class OpenTrade:
+
+    def __init__(self, api_ob):
+        self.id = api_ob['Id']
+        self.instrument = api_ob['Symbol']
+        self.price = api_ob['Price']
+        self.initialAmount = api_ob['InitialAmount']
+        self.unrealizedPL = api_ob['Profit']
+        self.marginUsed = api_ob['Margin']
+        self.stop_loss = 0.0000
+        self.take_profit = 0.0000
+        if "StopLoss" in api_ob:
+            self.stop_loss = api_ob['StopLoss']
+        if "TakeProfit" in api_ob:
+            self.stop_loss = api_ob['TakeProfit']
+
+    def __repr__(self):
+        return str(vars(self))
+
+### ---- run_api_tests.py ----- ###
+
+from dateutil.parser import parse
+
+print(api.get_candles_df(pair_name="EURUSD", count=-10, granularity="H1"))
+print(api.get_candles_df(pair_name="EURUSD", count=10, granularity="H1", date_f=parse("2021-01-10T00:00:00")))
+print(api.last_complete_candle(pair_name="EURUSD", granularity="H1"))
+
+### ---- openfx_api.py ----- ###
+### ---- run_api_tests.py ----- ###
+import time
+import constants.defs as defs
+
+api.place_trade("EURUSD", 17000, defs.BUY, 1.06400, 1.06800)
+
+time.sleep(2)
+
+print("Getting open")
+ot = api.get_open_trades()
+
+for t in ot:
+    print("Got trade:", t)
+    print("Got trade:", t.id)
+    time.sleep(2)
+    print("Closing...")
+    api.close_trade(t.id)
+
+
+time.sleep(1)
+print("Getting open")
+ot = api.get_open_trades()
+print(ot)
+print("Done")
+
+### ---- openfx_api.py ----- ###
+from infrastructure.instrument_collection import instrumentCollection as ic
+from models.open_trade import OpenTrade
+
+
+def place_trade(self, pair_name: str, amount: int, direction: int,
+                    stop_loss: float=None, take_profit: float=None):
+    
+
+    dir_str = "Buy" if direction == defs.BUY else "Sell"
+
+    url = f"trade"
+
+    instrument = ic.instruments_dict[pair_name]
+    data = dict(
+        Type="Market",
+        Symbol=pair_name, 
+        Amount=amount,
+        Side=dir_str
+    )
+
+    if stop_loss is not None:
+        data['StopLoss'] = round(stop_loss, instrument.displayPrecision)
+
+    if take_profit is not None:
+        data['TakeProfit'] = round(take_profit, instrument.displayPrecision)
+        
+    print(f"place trade args: {pair_name} {amount} {direction} {stop_loss} {take_profit}")
+    print("Place Trade:", data)
+
+    ok, response = self.make_request(url, verb="post", data=data, code=200)
+
+    print(ok, response)
+
+    if 'RemainingAmount' in response and response['RemainingAmount'] != 0:
+        return response['Id']
+    else:
+        return None
+
+
+def get_open_trade(self, trade_id):
+        url = f"trade/{trade_id}"
+        ok, response = self.make_request(url)
+
+        if ok == True and 'Id' in response:
+            return OpenTrade(response)
+
+
+def get_open_trades(self):
+    url = f"trade"
+    ok, response = self.make_request(url)
+
+    if ok == True:
+        return [OpenTrade(x) for x in response]
+        
+
+def close_trade(self, trade_id):
+    url = f"trade"
+
+    params ={
+        "trade.type": "Close",
+        "trade.id": trade_id
+    }
+
+    ok, _ = self.make_request(url, verb="delete", params=params, code=200)
+
+    if ok == True:
+        print(f"Closed {trade_id} successfully")
+    else:
+        print(f"Failed to close {trade_id}")
+
+    return ok
+
+
+### --- extra at the end --- ##
+
+
+        if 'RemainingAmount' in response and response['RemainingAmount'] != 0:
+            ot = self.get_open_trade(response['Id'])
+
+            if ot is not None:
+                return response['Id']
+            else:
+                return None
+        else:
+            return None

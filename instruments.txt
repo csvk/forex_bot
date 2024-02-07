@@ -1,0 +1,51 @@
+
+### ---- openfx_api.py ----- ###
+
+def get_account_instruments(self, StatusGroupId='Forex'):
+        url = f"symbol"
+        ok, symbol_data = self.make_request(url, save_filename="symbol")
+
+        if ok == False:
+            print("ERROR get_account_instruments()", symbol_data)
+            return None
+
+        target_inst = [x for x in symbol_data if x['StatusGroupId']==StatusGroupId and len(x['Symbol'])==6]
+        
+        url = f"quotehistory/symbols"
+        ok, his_symbol_data = self.make_request(url, save_filename="quotehistory_symbols")
+
+        final_instruments = [x for x in target_inst if x['Symbol'] in his_symbol_data]
+
+        return final_instruments 
+
+
+### ---- instrument.py ----- ###
+
+class Instrument:
+
+    def __init__(self, Symbol, Precision, TradeAmountStep):
+        self.name = Symbol
+        self.ins_type = "CURRENCY"
+        self.displayName = Symbol
+        self.pipLocation = pow(10, (Precision-1) * -1)
+        self.tradeUnitsPrecision = Precision
+        self.marginRate = 0.02
+        self.displayPrecision = Precision
+        self.TradeAmountStep = int(TradeAmountStep)
+
+    def __repr__(self):
+        return str(vars(self))
+
+    @classmethod
+    def FromApiObject(cls, ob):
+        return Instrument(
+            ob['Symbol'],
+            ob['Precision'],
+            ob['TradeAmountStep']
+        )
+
+
+### ---- instrument_collection.py ---- ###
+
+API_KEYS = ['Symbol', 'Precision', 'TradeAmountStep']
+key = i['Symbol']

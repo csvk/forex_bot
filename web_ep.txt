@@ -1,0 +1,14 @@
+
+    def web_api_candles(self, pair_name, granularity, count):
+
+        pair_name = pair_name.replace('_', '')
+        df = self.get_candles_df(pair_name, granularity=granularity, count=int(count)*-1)
+        if df.shape[0] == 0:
+            return None
+
+        cols = ['time', 'mid_o', 'mid_h', 'mid_l', 'mid_c']
+        df = df[cols].copy()
+
+        df['time'] = df.time.dt.strftime("%y-%m-%d %H:%M")
+
+        return df.to_dict(orient='list')

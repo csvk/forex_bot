@@ -1,0 +1,180 @@
+
+### ---- trade_risk_calculator.py ----- ###
+
+from openfx_api.openfx_api import OpenFxApi
+from infrastructure.instrument_collection import instrumentCollection as ic
+
+BASE = 10000
+MINUMUM = 1000
+
+def get_trade_size(api: OpenFxApi, pair, loss, trade_risk, log_message):
+
+    pip_values = api.get_pip_value([pair])    
+
+    if pip_values is None or len(pip_values.keys()) == 0:
+        log_message("get_trade_size() pip_values is none", pair)
+        return 0
+
+    our_pip_value = pip_values[pair]    
+        
+    log_message(f"get_trade_size() our_pip_value {our_pip_value:.6f}", pair)
+
+    our_instrument = ic.instruments_dict[pair]
+
+
+    pipLocation = our_instrument.pipLocation
+    num_pips = loss / pipLocation
+    per_pip_loss = trade_risk / num_pips
+
+
+    ratio = per_pip_loss / our_pip_value
+
+
+    trade_pure = BASE * ratio
+
+    trade_size = int(trade_pure / our_instrument.TradeAmountStep) * our_instrument.TradeAmountStep
+        
+    log_message(f"get_trade_size() num_pips:{num_pips} per_pip_loss:{per_pip_loss} ratio:{ratio} trade_pure:{trade_pure} trade_size:{trade_size}", pair)
+    
+    if trade_size < MINUMUM:
+        return 0
+    
+    return trade_size
+
+### ---- trade_manager.py ----- ###
+
+from openfx_api.openfx_api import OpenFxApi
+from bot.trade_risk_calculator import get_trade_size
+
+def place_trade(trade_decision: TradeDecision, api: OpenFxApi, log_message, log_error, trade_risk):
+
+    ot = trade_is_open(trade_decision.pair, api)
+
+    if ot is not None:
+        log_message(f"Failed to place trade {trade_decision}, already open: {ot}", trade_decision.pair)
+        return None
+
+    trade_amount = get_trade_size(api, trade_decision.pair, 
+                            trade_decision.loss, trade_risk, log_message)
+
+    trade_id = api.place_trade(
+        trade_decision.pair, 
+        trade_amount,
+        trade_decision.signal,
+        trade_decision.sl,
+        trade_decision.tp
+    )
+
+    if trade_id is None:
+        log_error(f"ERROR placing {trade_decision}")
+        log_message(f"ERROR placing {trade_decision}", trade_decision.pair)
+    else:
+        log_message(f"placed trade_id:{trade_id} for {trade_decision}", trade_decision.pair)
+
+
+### ---- techincals_manager.py ----- ###
+from openfx_api.openfx_api import OpenFxApi
+
+
+def fetch_candles(pair, row_count, candle_time, granularity,
+                    api: OpenFxApi, log_message):
+
+    df = api.get_candles_df(pair, count=row_count, granularity=granularity)
+
+    if df is None or df.shape[0] == 0:
+        log_message("tech_manager fetch_candles failed to get candles", pair)
+        return None
+    
+    if df.iloc[-1].time != candle_time:
+        log_message(f"tech_manager fetch_candles {df.iloc[-1].time} not correct", pair)
+        return None
+
+    return df
+
+def get_trade_decision(candle_time, pair, granularity, api: OpenFxApi, 
+                            trade_settings: TradeSettings, log_message):
+
+
+    max_rows = (trade_settings.n_ma + ADDROWS) * -1
+
+    log_message(f"tech_manager: max_rows:{max_rows} candle_time:{candle_time} granularity:{granularity}", pair)
+
+    df = fetch_candles(pair, max_rows, candle_time,  granularity, api, log_message)
+
+    if df is not None:
+        last_row = process_candles(df, pair, trade_settings, log_message)
+        return TradeDecision(last_row)
+
+    return None
+
+
+
+### ---- candle_manager.py ----- ###
+ 
+from openfx_api.openfx_api import OpenFxApi
+from models.candle_timing import CandleTiming
+
+class CandleManager:
+
+    def __init__(self, api: OpenFxApi, trade_settings, log_message, granularity):
+        self.api = api
+        self.trade_settings = trade_settings
+        self.log_message = log_message
+        self.granularity = granularity
+        self.pairs_list = list(self.trade_settings.keys())
+        self.timings = { p: CandleTiming(self.api.last_complete_candle(p, self.granularity)) for p in self.pairs_list }
+        for p, t in self.timings.items():
+            self.log_message(f"CandleManager() init last_candle:{t}", p)
+
+    def update_timings(self):
+        triggered = []
+
+        for pair in self.pairs_list:
+            current = self.api.last_complete_candle(pair, self.granularity)
+            print(f"CandleManager {pair} current:{current} last:{self.timings[pair].last_time}")
+            if current is None:
+                self.log_message("Unable to get candle", pair)
+                continue
+            self.timings[pair].is_ready = False
+            if current > self.timings[pair].last_time:
+                self.timings[pair].is_ready = True
+                self.timings[pair].last_time = current
+                self.log_message(f"CandleManager() new candle:{self.timings[pair]}", pair)
+                print(f"CandleManager() new candle:{self.timings[pair]}", pair)
+                triggered.append(pair)
+        return triggered
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
