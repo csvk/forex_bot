@@ -1,6 +1,9 @@
 # credential file
 api_creds.json
 
+# data files
+souvik/data
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
