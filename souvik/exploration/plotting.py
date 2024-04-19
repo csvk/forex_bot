@@ -4,19 +4,21 @@ from plotly.subplots import make_subplots
 
 class CandlePlot:
 
-    def __init__(self, df, candles=True):
+    def __init__(self, df, candles=True, log=False):
         self.df_plot = df.copy()
         self.candles = candles
-        self.create_candle_fig()
+        self.create_candle_fig(log)
 
     def add_timestr(self):
         # self.df_plot['sTime'] = [dt.datetime.strftime(x, "s%y-%m-%d %H:%M") 
         #                 for x in self.df_plot.time]
         self.df_plot['sTime'] = [f'{str(dt)}' for dt in self.df_plot.time]
 
-    def create_candle_fig(self):
+    def create_candle_fig(self, log):
         self.add_timestr()
         self.fig = make_subplots(specs=[[{"secondary_y": True}]])
+        if log:
+            self.fig.update_yaxes(type='log')
         if self.candles == True:
             self.fig.add_trace(go.Candlestick(
                 x=self.df_plot.sTime,
