@@ -141,8 +141,8 @@ def realised_pnl(d: Data, i: int):
     return round(pnl, 2)
 
 def unrealised_pnl_prev_bar(d: Data, i: int):
-    open_longs = d.fdata('open_longs', i-1).copy() if type(d.fdata('open_longs', i)) == dict else dict()
-    open_shorts = d.fdata('open_shorts', i-1).copy() if type(d.fdata('open_shorts', i)) == dict else dict()
+    open_longs = d.fdata('open_longs', i-1).copy() if type(d.fdata('open_longs', i-1)) == dict else dict()
+    open_shorts = d.fdata('open_shorts', i-1).copy() if type(d.fdata('open_shorts', i-1)) == dict else dict()
     pnl = 0
     for _, trade in open_longs.items():
         pnl = pnl + trade[SIZE] * (d.fdata('mid_c', i) - trade[ENTRY])
@@ -150,39 +150,108 @@ def unrealised_pnl_prev_bar(d: Data, i: int):
         pnl = pnl + trade[SIZE] * (trade[ENTRY] - d.fdata('mid_c', i))
     return round(pnl, 2)
 
+def current_values(d: Data, i: int, ticker: str):
+    _cum_long_position = cum_long_position(d, i)
+    _cum_short_position = cum_short_position(d, i)
+    _unrealised_pnl = unrealised_pnl(d, i)
+    _realised_pnl = realised_pnl(d, i)
+    ac_bal = d.fdata('ac_bal', i) if type(d.fdata('ac_bal', i)) == float else d.fdata('ac_bal', i-1)
+    ac_bal = ac_bal + _realised_pnl
+    margin_used = (_cum_long_position + _cum_short_position) * float(instr[ticker]['marginRate'])
+    margin_closeout = ac_bal + _unrealised_pnl
+    return margin_used, margin_closeout
+
 def dynamic_trade_size(d: Data, i: int, sizing_ratio: float):
-    _net_bal = d.fdata('ac_bal', i-1) + unrealised_pnl_prev_bar(d, i)
+    _net_bal = d.fdata('ac_bal', i-1) + unrealised_pnl(d, i)
+    if _net_bal < 0:
+        print(i, d.fdata('time', i), _net_bal)
     return int(_net_bal * sizing_ratio)   
 
-def open_trades(d: Data, i: int, ticker: str, tp_pips: int, sl_pips: int, init_trade_size: int, sizing: str, sizing_ratio: float, trade_no: int):
-    long_tp = d.fdata('mid_c', i) + tp_pips * pow(10, instr[ticker]['pipLocation'])
-    short_tp = d.fdata('mid_c', i) - tp_pips * pow(10, instr[ticker]['pipLocation'])
-
-    long_sl = d.fdata('mid_c', i) - sl_pips * pow(10, instr[ticker]['pipLocation'])
-    short_sl = d.fdata('mid_c', i) + sl_pips * pow(10, instr[ticker]['pipLocation'])
-
-    if i == 0:
-        open_longs, open_shorts = dict(), dict()
-        trade_size = init_trade_size
-    else:
-        open_longs, open_shorts = d.fdata('open_longs', i-1).copy(), d.fdata('open_shorts', i-1).copy()
-        # Temporary data population for dynamic trade size calculation
-        d.update_fdata('open_longs', i, open_longs)
-        d.update_fdata('open_shorts', i, open_shorts)
-        trade_size = init_trade_size if sizing == 'static' else dynamic_trade_size(d, i, sizing_ratio)
-
-    open_longs[trade_no] = (trade_size, d.fdata('ask_c', i), long_tp, long_sl) # (SIZE, ENTRY, TP, SL)
-    d.update_fdata('open_longs', i, open_longs)
-    open_shorts[trade_no] = (trade_size, d.fdata('bid_c', i), short_tp, short_sl) # (SIZE, ENTRY, TP, SL)
-    d.update_fdata('open_shorts', i, open_shorts)
-
-    if d.fdata('trade_type', i) != 0: # Do not update if stop loss was triggered on this bar
-        d.update_fdata('trade_type', i, 1)
-    
-    return long_tp, short_tp # equals next_up_grid, next_down_grid for next grid level trades
-
-def close_long(d: Data, i: int, ticker: str, trade_no: int, sl=False):
+def cashin_cashout(d:Data, i: int, init_bal: float, cash_out_factor: float, margin_sl_percent:float):
     TP, SL = 1, 0
+    # Cash out / withdraw
+    if d.fdata('margin_closeout', i) >= init_bal * cash_out_factor:
+        cash_out = d.fdata('margin_closeout', i) - init_bal * cash_out_factor
+        d.update_fdata('ac_bal', i, round(d.fdata('ac_bal', i) - cash_out, 2))
+        d.update_fdata('margin_closeout', i, d.fdata('margin_closeout', i) - cash_out)
+        d.update_fdata('cash_bal', i, round(d.fdata('cash_bal', i-1) + cash_out, 2)) 
+    # Deposit money into a/c when stop loss is triggered
+    # print(d.fdata('margin_closeout', i), ',', d.fdata('margin_used', i), ',', margin_sl_percent)
+    elif d.fdata('trade_type', i) == SL:
+        cash_in = min(init_bal * cash_out_factor - d.fdata('margin_closeout', i), d.fdata('cash_bal', i-1))
+        d.update_fdata('ac_bal', i, round(d.fdata('ac_bal', i) + cash_in, 2))
+        d.update_fdata('margin_closeout', i, d.fdata('margin_closeout', i) + cash_in)
+        d.update_fdata('cash_bal', i, round(d.fdata('cash_bal', i-1) + cash_in, 2))
+    else:
+        d.update_fdata('cash_bal', i, d.fdata('cash_bal', i-1))
+
+def calc_ac_values(d: Data, i: int, ticker: str, init_bal: float, cash_out_factor: float, margin_sl_percent: float):
+    d.update_fdata('cum_long_position', i, cum_long_position(d, i))
+    d.update_fdata('cum_short_position', i, cum_short_position(d, i))
+    d.update_fdata('unrealised_pnl', i, unrealised_pnl(d, i))
+    d.update_fdata('realised_pnl', i, realised_pnl(d, i))
+    # First candle
+    if i == 0:               
+        d.update_fdata('ac_bal', i, init_bal)
+        if cash_out_factor is not None:
+            d.update_fdata('cash_bal', i, 0)
+    # Subsequent candles
+    else:
+        d.update_fdata('ac_bal', i, round(d.fdata('ac_bal', i-1) + d.fdata('realised_pnl', i), 2))
+    d.update_fdata('margin_used', i, \
+                round((d.fdata('cum_long_position', i) + d.fdata('cum_short_position', i)) * float(instr[ticker]['marginRate']), 2))
+    d.update_fdata('margin_closeout', i, round(d.fdata('ac_bal', i) + d.fdata('unrealised_pnl', i), 2))
+
+    if i > 0:
+        if cash_out_factor is not None:
+            cashin_cashout(d, i, init_bal, cash_out_factor, margin_sl_percent)
+
+def open_trades(d: Data, i: int, ticker: str, tp_pips: int, sl_pips: int, init_trade_size: int, sizing: str, 
+                sizing_ratio: float, trade_no: int, next_up_grid: float, next_down_grid: float, init_bal: float, 
+                cash_out_factor: float, margin_sl_percent: float):
+    NT, TP, SL, MC = 1, 1, 0, -1
+
+    if i == 0 or (d.fdata('mid_c', i) >= next_up_grid or d.fdata('mid_c', i) <= next_down_grid):
+        trade_no = trade_no + 1 
+
+        long_tp = d.fdata('mid_c', i) + tp_pips * pow(10, instr[ticker]['pipLocation'])
+        short_tp = d.fdata('mid_c', i) - tp_pips * pow(10, instr[ticker]['pipLocation'])
+
+        long_sl = d.fdata('mid_c', i) - sl_pips * pow(10, instr[ticker]['pipLocation'])
+        short_sl = d.fdata('mid_c', i) + sl_pips * pow(10, instr[ticker]['pipLocation'])
+
+        if i == 0:
+            open_longs, open_shorts = dict(), dict()
+            trade_size = init_trade_size
+        else:
+            open_longs = d.fdata('open_longs', i).copy() if type(d.fdata('open_longs', i)) == dict else d.fdata('open_longs', i-1).copy() 
+            open_shorts = d.fdata('open_shorts', i).copy() if type(d.fdata('open_shorts', i)) == dict else d.fdata('open_shorts', i-1).copy() 
+            # Temporary data population for dynamic trade size calculation
+            d.update_fdata('open_longs', i, open_longs)
+            d.update_fdata('open_shorts', i, open_shorts)
+            trade_size = init_trade_size if sizing == 'static' else dynamic_trade_size(d, i, sizing_ratio)
+
+        open_longs[trade_no] = (trade_size, d.fdata('ask_c', i), long_tp, long_sl) # (SIZE, ENTRY, TP, SL)
+        d.update_fdata('open_longs', i, open_longs)
+        open_shorts[trade_no] = (trade_size, d.fdata('bid_c', i), short_tp, short_sl) # (SIZE, ENTRY, TP, SL)
+        d.update_fdata('open_shorts', i, open_shorts)
+
+        # Do not update if stop loss / margin call was triggered on this bar
+        if d.fdata('trade_type', i) != SL and d.fdata('trade_type', i) != MC:
+            d.update_fdata('trade_type', i, NT)           
+        
+    else: # Cascade open positions from prev candle to current candle
+        trade_no = trade_no
+        long_tp, short_tp = next_up_grid, next_down_grid
+        d.update_fdata('open_longs', i, d.fdata('open_longs', i-1).copy())
+        d.update_fdata('open_shorts', i, d.fdata('open_shorts', i-1).copy())
+
+    calc_ac_values(d, i, ticker, init_bal, cash_out_factor, margin_sl_percent)    
+
+    return trade_no, long_tp, short_tp # equals next_up_grid, next_down_grid for next grid level trades
+
+def close_long(d: Data, i: int, ticker: str, trade_no: int, sl_type: int):
+    TP, SL, MC = 1, 0, -1
     # Remove from open longs
     open_longs = d.fdata('open_longs', i).copy()
     closing_long = open_longs[trade_no]
@@ -195,13 +264,10 @@ def close_long(d: Data, i: int, ticker: str, trade_no: int, sl=False):
     closed_longs[trade_no] = (closing_long[SIZE], closing_long[ENTRY], d.fdata('bid_c', i), round(pips, 1)) # (SIZE, ENTRY, EXIT, PIPS)
 
     d.update_fdata('closed_longs', i, closed_longs)
-    if sl == True:
-        d.update_fdata('trade_type', i, SL)
-    else:
-        d.update_fdata('trade_type', i, TP)
+    d.update_fdata('trade_type', i, sl_type)
 
-def close_short(d: Data, i: int, ticker: str, trade_no: int, sl=False):
-    TP, SL = 1, 0
+def close_short(d: Data, i: int, ticker: str, trade_no: int, sl_type: int):
+    TP, SL, MC = 1, 0, -1
     # Remove from open shorts
     open_shorts = d.fdata('open_shorts', i).copy()
     closing_short = open_shorts[trade_no]
@@ -214,33 +280,31 @@ def close_short(d: Data, i: int, ticker: str, trade_no: int, sl=False):
     closed_shorts[trade_no] = (closing_short[SIZE], closing_short[ENTRY], d.fdata('ask_c', i), round(pips, 1)) # (SIZE, ENTRY, EXIT, PIPS)
 
     d.update_fdata('closed_shorts', i, closed_shorts)
-    if sl == True:
-        d.update_fdata('trade_type', i, SL)
-    else:
-        d.update_fdata('trade_type', i, TP)
+    d.update_fdata('trade_type', i, sl_type)
 
-def current_values(d: Data, i: int, ticker: str):
-    _cum_long_position = cum_long_position(d, i)
-    _cum_short_position = cum_short_position(d, i)
-    _unrealised_pnl = unrealised_pnl(d, i)
-    _realised_pnl = realised_pnl(d, i)
-    ac_bal = d.fdata('ac_bal', i-1) + _realised_pnl
-    margin_used = (_cum_long_position + _cum_short_position) * float(instr[ticker]['marginRate'])
-    margin_closeout = ac_bal + _unrealised_pnl
-    return margin_used, margin_closeout
-
-def take_profit(d: Data, i: int, ticker: str):            
+def take_profit(d: Data, i: int, ticker: str, init_bal: float, cash_out_factor: float, margin_sl_percent: float):  
+    NT, TP, SL, MC = 1, 1, 0, -1
+    trade = False          
     # Close long positions take profit
-    open_longs = d.fdata('open_longs', i).copy()
+    open_longs = d.fdata('open_longs', i).copy() if type(d.fdata('open_longs', i)) == dict else dict()
     for trade_no, trade in open_longs.items():
         if d.fdata('mid_c', i) >= trade[TP]:
             close_long(d, i, ticker, trade_no)
+            trade = True
 
     # Close short positions take profit
-    open_shorts = d.fdata('open_shorts', i).copy()
+    open_shorts = d.fdata('open_shorts', i).copy() if type(d.fdata('open_shorts', i)) == dict else dict()
     for trade_no, trade in open_shorts.items():
         if d.fdata('mid_c', i) <= trade[TP]:
             close_short(d, i, ticker, trade_no)
+            trade = True
+
+    # Do not update if stop loss / margin call was triggered on this bar
+    if d.fdata('trade_type', i) != SL and d.fdata('trade_type', i) != MC:
+        if trade == True:
+            d.update_fdata('trade_type', i, TP)   
+
+    calc_ac_values(d, i, ticker, init_bal, cash_out_factor, margin_sl_percent)    
 
 def margin_stop_loss_oldest(d: Data, i: int, ticker: str, margin_sl_percent: float=0.5):
     margin_used, margin_closeout = current_values(d, i)
@@ -297,7 +361,7 @@ def margin_stop_loss_farthest(d: Data, i: int, ticker: str, margin_sl_percent: f
                 margin_used, _ = current_values(d, i, ticker)
             else:
                 if farthest_long_price - price > price - farthest_short_price:
-                    close_long(d, i, farthest_long, sl=True)
+                    close_long(d, i, farthest_long, sl_type=True)
                     margin_used, _ = current_values(d, i, ticker)
                 else:
                     close_short(d, i, ticker, farthest_short, sl=True)
@@ -372,50 +436,43 @@ def stop_loss_grid_count(d: Data, i: int, ticker: str):
             close_short(d, i, ticker, trade_no, sl=True)
 
 def margin_stop_loss_grid_count(d: Data, i: int, ticker: str, margin_sl_percent: float=0.5):
-    margin_used, margin_closeout = current_values(d, i)
+    margin_used, margin_closeout = current_values(d, i, ticker)
     # Margin call is triggered when margin closeout is less than 50% of margin used.
     # Here stop loss is triggered if it falls below margin_sl_percent
     if margin_closeout < margin_used * margin_sl_percent:
         stop_loss_grid_count(d, i, ticker)
 
-def cashin_cashout(d:Data, i: int, init_bal: float, cash_out_factor: float, margin_sl_percent:float):
-    TP, SL = 1, 0
-    # Cash out / withdraw
-    if d.fdata('margin_closeout', i) >= init_bal * cash_out_factor:
-        cash_out = d.fdata('margin_closeout', i) - init_bal * cash_out_factor
-        d.update_fdata('ac_bal', i, round(d.fdata('ac_bal', i) - cash_out, 2))
-        d.update_fdata('margin_closeout', i, d.fdata('margin_closeout', i) - cash_out)
-        d.update_fdata('cash_bal', i, round(d.fdata('cash_bal', i-1) + cash_out, 2)) 
-    # Deposit money into a/c when stop loss is triggered
-    # print(d.fdata('margin_closeout', i), ',', d.fdata('margin_used', i), ',', margin_sl_percent)
-    elif d.fdata('trade_type', i) == SL:
-        cash_in = min(init_bal * cash_out_factor - d.fdata('margin_closeout', i), d.fdata('cash_bal', i-1))
-        d.update_fdata('ac_bal', i, round(d.fdata('ac_bal', i) + cash_in, 2))
-        d.update_fdata('margin_closeout', i, d.fdata('margin_closeout', i) + cash_in)
-        d.update_fdata('cash_bal', i, round(d.fdata('cash_bal', i-1) + cash_in, 2))
-    else:
-        d.update_fdata('cash_bal', i, d.fdata('cash_bal', i-1))
+def run_stop_loss(d: Data, i: int, ticker: str, stop_loss: str, init_bal: float, cash_out_factor: float, margin_sl_percent: float):
+    if stop_loss == 'grid_count':
+        stop_loss_grid_count(d, i, ticker)
+    elif stop_loss == 'margin_grid_count':
+        margin_stop_loss_grid_count(d, i, ticker, margin_sl_percent)
+    elif stop_loss == 'margin_closeout_oldest':
+        margin_stop_loss_oldest(d, i, ticker, margin_sl_percent)
+    elif stop_loss == 'margin_closeout_farthest':
+        margin_stop_loss_farthest(d, i, ticker, margin_sl_percent)
+    elif stop_loss == 'margin_closeout_oldest_1':
+        margin_stop_loss_oldest_1(d, i, ticker, margin_sl_percent)
+    elif stop_loss == 'margin_closeout_farthest_1':
+        margin_stop_loss_farthest_1(d, i, ticker, margin_sl_percent)
 
-def calc_ac_values(d: Data, i: int, ticker: str, init_bal: float, cash_out_factor: float, margin_sl_percent: float):
-    d.update_fdata('cum_long_position', i, cum_long_position(d, i))
-    d.update_fdata('cum_short_position', i, cum_short_position(d, i))
-    d.update_fdata('unrealised_pnl', i, unrealised_pnl(d, i))
-    d.update_fdata('realised_pnl', i, realised_pnl(d, i))
-    # First candle
-    if i == 0:               
-        d.update_fdata('ac_bal', i, init_bal)
-        if cash_out_factor is not None:
-            d.update_fdata('cash_bal', i, 0)
-    # Subsequent candles
-    else:
-        d.update_fdata('ac_bal', i, round(d.fdata('ac_bal', i-1) + d.fdata('realised_pnl', i), 2))
-    d.update_fdata('margin_used', i, \
-                round((d.fdata('cum_long_position', i) + d.fdata('cum_short_position', i)) * float(instr[ticker]['marginRate']), 2))
-    d.update_fdata('margin_closeout', i, round(d.fdata('ac_bal', i) + d.fdata('unrealised_pnl', i), 2))
+    # Update account values
+    calc_ac_values(d, i, ticker, init_bal, cash_out_factor, margin_sl_percent)
 
-    if i > 0:
-        if cash_out_factor is not None:
-            cashin_cashout(d, i, init_bal, cash_out_factor, margin_sl_percent)
+def margin_call(d: Data, i: int, ticker: str, stop_loss: str, init_bal: float, cash_out_factor: float, margin_sl_percent: float):
+    TP, SL, MC = 1, 0, -1
+    calc_ac_values(d, i, ticker, init_bal, cash_out_factor, margin_sl_percent)
+    if d.fdata('margin_closeout', 1) < d.fdata('margin_used', i) * 0.5:
+        open_longs = d.fdata('open_longs', i).copy()
+        for trade_no, trade in open_longs.items():
+            close_long(d, i, ticker, trade_no, sl_type=MC)
+
+        open_shorts = d.fdata('open_shorts', i).copy()
+        for trade_no, trade in open_shorts.items():
+            close_short(d, i, ticker, trade_no, sl_type=MC)
+
+        # Update account values
+        calc_ac_values(d, i, ticker, init_bal, cash_out_factor, margin_sl_percent)
 
 def run_sim(d: Data, ticker: str, sim_name: str, start: int, end: int, init_bal: int, init_trade_size: int, grid_pips: int, 
             sl_grid_count: int, stop_loss: str, margin_sl_percent: float, sizing: str, cash_out_factor: float) -> pd.DataFrame:
@@ -440,58 +497,53 @@ def run_sim(d: Data, ticker: str, sim_name: str, start: int, end: int, init_bal:
     )
     d.prepare_fast_data(name=sim_name, start=start, end=end, add_cols=add_cols)
 
-    for i in tqdm(range(d.fdatalen), desc=" Simulating... "):       
-        # First candle
-        if i == 0:
-            # Open new trades
-            trade_no = 1            
-            next_up_grid, next_down_grid = open_trades(d=d, 
-                                                       i=i,
-                                                       ticker=ticker,
-                                                       tp_pips=tp_pips,
-                                                       sl_pips=sl_pips, 
-                                                       init_trade_size=init_trade_size, 
-                                                       sizing=sizing,
-                                                       sizing_ratio=sizing_ratio,
-                                                       trade_no=trade_no)
-            calc_ac_values(d, i, ticker, init_bal, cash_out_factor, margin_sl_percent)
-        # Subsequent candles
-        else:
-            # Open new trades
-            if d.fdata('mid_c', i) >= next_up_grid or d.fdata('mid_c', i) <= next_down_grid:
-                trade_no = trade_no + 1            
-                next_up_grid, next_down_grid = open_trades(d=d, 
-                                                           i=i,
-                                                           ticker=ticker,
-                                                           tp_pips=tp_pips, 
-                                                           sl_pips=sl_pips, 
-                                                           init_trade_size=init_trade_size, 
-                                                           sizing=sizing,
-                                                           sizing_ratio=sizing_ratio,
-                                                           trade_no=trade_no)
-            else: # Cascade open positions from prev candle to current candle
-                d.update_fdata('open_longs', i, d.fdata('open_longs', i-1).copy())
-                d.update_fdata('open_shorts', i, d.fdata('open_shorts', i-1).copy())
-                
+    trade_no = 0
+    next_up_grid, next_down_grid = None, None
+    for i in tqdm(range(d.fdatalen), desc=" Simulating... "):
+        if i > 0:
             # Take profit
-            take_profit(d, i, ticker)
+            take_profit(d=d, 
+                        i=i, 
+                        ticker=ticker, 
+                        init_bal=init_bal,
+                        cash_out_factor=cash_out_factor,
+                        margin_sl_percent=margin_sl_percent)
 
             # Stop loss
-            if stop_loss == 'grid_count':
-                stop_loss_grid_count(d, i, ticker)
-            elif stop_loss == 'margin_grid_count':
-                margin_stop_loss_grid_count(d, i, ticker, margin_sl_percent)
-            elif stop_loss == 'margin_closeout_oldest':
-                margin_stop_loss_oldest(d, i, ticker, margin_sl_percent)
-            elif stop_loss == 'margin_closeout_farthest':
-                margin_stop_loss_farthest(d, i, ticker, margin_sl_percent)
-            elif stop_loss == 'margin_closeout_oldest_1':
-                margin_stop_loss_oldest_1(d, i, ticker, margin_sl_percent)
-            elif stop_loss == 'margin_closeout_farthest_1':
-                margin_stop_loss_farthest_1(d, i, ticker, margin_sl_percent)
+            run_stop_loss(d=d,
+                          i=i,
+                          ticker=ticker,
+                          stop_loss=stop_loss,
+                          init_bal=init_bal,
+                          cash_out_factor=cash_out_factor,
+                          margin_sl_percent=margin_sl_percent)   
+            
+            margin_call(d=d,
+                i=i,
+                ticker=ticker,
+                stop_loss=stop_loss,
+                init_bal=init_bal,
+                cash_out_factor=cash_out_factor,
+                margin_sl_percent=margin_sl_percent)   
+            
+        # Open new trades            
+        trade_no, next_up_grid, next_down_grid = open_trades(d=d, 
+                                                    i=i,
+                                                    ticker=ticker,
+                                                    tp_pips=tp_pips,
+                                                    sl_pips=sl_pips, 
+                                                    init_trade_size=init_trade_size, 
+                                                    sizing=sizing,
+                                                    sizing_ratio=sizing_ratio,
+                                                    trade_no=trade_no,
+                                                    next_up_grid=next_up_grid,
+                                                    next_down_grid=next_down_grid,
+                                                    init_bal=init_bal,
+                                                    cash_out_factor=cash_out_factor,
+                                                    margin_sl_percent=margin_sl_percent)
 
-            # Update account values
-            calc_ac_values(d, i, ticker, init_bal, cash_out_factor, margin_sl_percent)
+
+            
 
     result = d.df[sim_name].copy()
     result = result[(result['trade_type'] == 1) | (result['trade_type'] == 0)]
