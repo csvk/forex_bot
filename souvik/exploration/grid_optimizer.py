@@ -107,6 +107,7 @@ class GridOptimizer:
         )
 
         result = sim.run_sim()
+        # result[~result.event_type.isnull()].to_csv(f'{self.out_path}{sim_name}.csv', index=False)
         result.to_csv(f'{self.out_path}{sim_name}.csv', index=False)
 
         self.inputs_list.append(inputs)
