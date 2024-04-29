@@ -10,6 +10,7 @@ class GridOptimizer:
             counter: int,
             start: int,
             end: int,
+            records: list,
             tickers: list,
             frequency: list,
             init_bal: list,
@@ -20,15 +21,19 @@ class GridOptimizer:
             margin_sl_percent: list,
             sizing: list,
             cash_out_factor: list,
+            cover_stopped_loss: list,
             data_path: str,
             instruments: str,
             out_path: str,
-            inputs_file: str):
+            inputs_file: str,
+            dummyrun: bool):
         
+        self.dummyrun = dummyrun
         self.checkpoint = checkpoint
         self.counter = counter
         self.start = start
         self.end = end
+        self.records = records
         self.tickers = tickers
         self.frequency = frequency
         self.init_bal = init_bal
@@ -39,6 +44,7 @@ class GridOptimizer:
         self.margin_sl_percent = margin_sl_percent
         self.sizing = sizing
         self.cash_out_factor = cash_out_factor
+        self.cover_stopped_loss = cover_stopped_loss
         self.data_path = data_path
         self.instruments = instruments
         self.out_path = out_path
@@ -62,6 +68,7 @@ class GridOptimizer:
                 margin_sl_percent = self.margin_sl_percent,
                 sizing = self.sizing,
                 cash_out_factor = self.cash_out_factor,
+                cover_stopped_loss = self.cover_stopped_loss,
                 data_path = self.data_path,
                 instruments = self.instruments,
                 out_path = self.out_path,
@@ -73,6 +80,14 @@ class GridOptimizer:
         df = pd.read_pickle(f"{self.data_path}{ticker}_{frequency}.pkl")
         return df
     
+    def save_files(self, inputs_df, ticker, frequency):
+        result = self.sim.d.df[self.sim.name].copy()
+        if 'events' in self.records:
+            result[~result.events.isnull()].to_csv(f'{self.out_path}{self.sim.name}-events.csv', index=False)
+        if 'all' in self.records:
+            result.to_csv(f'{self.out_path}{self.sim.name}-all.csv', index=False)
+        inputs_df.to_csv(f'{self.out_path}{ticker}-{frequency}-' + self.inputs_file, index=False)
+
     def process_sim(self, 
                     df: pd.DataFrame,
                     ticker: str,
@@ -84,14 +99,18 @@ class GridOptimizer:
                     stop_loss_type: str,
                     margin_sl_percent: float,
                     sizing: str,
-                    cash_out_factor: float):
+                    cash_out_factor: float,
+                    cover_stopped_loss: bool):
         
         sim_name = f'{ticker}-{frequency}-{self.counter}'
-        header = ['sim_name', 'init_trade_size', 'grid_pips', 'stop_loss_type', 'sl_grid_count', 'stoploss_pips', 'margin_sl_percent', 'sizing', 'cash_out_factor']
-        inputs = [sim_name, init_trade_size, grid_pips, stop_loss_type, sl_grid_count, grid_pips * sl_grid_count, margin_sl_percent, sizing, cash_out_factor]
+        header = ['sim_name', 'init_trade_size', 'grid_pips', 'stop_loss_type', 'sl_grid_count', 'stoploss_pips', 'margin_sl_percent', 'sizing', 'cash_out_factor', 'cover_stopped_loss']
+        inputs = [sim_name, init_trade_size, grid_pips, stop_loss_type, sl_grid_count, grid_pips * sl_grid_count, margin_sl_percent, sizing, cash_out_factor, cover_stopped_loss]
         print(tabulate([inputs], header, tablefmt='plain'))
 
-        sim = GridSimulator(
+        self.inputs_list.append(inputs)
+        inputs_df = pd.DataFrame(self.inputs_list, columns=header)
+
+        self.sim = GridSimulator(
             name=sim_name,
             df=df,
             instruments=self.instruments,
@@ -103,17 +122,18 @@ class GridOptimizer:
             stop_loss_type=stop_loss_type,
             margin_sl_percent=margin_sl_percent,
             sizing=sizing,
-            cash_out_factor=cash_out_factor
+            cash_out_factor=cash_out_factor,
+            cover_stopped_loss=cover_stopped_loss
         )
 
-        result = sim.run_sim()
-        # result[~result.event_type.isnull()].to_csv(f'{self.out_path}{sim_name}.csv', index=False)
-        result.to_csv(f'{self.out_path}{sim_name}.csv', index=False)
+        try:
+            self.sim.run_sim()
+            self.save_files(inputs_df, ticker, frequency)
+        except Exception as e:
+            self.save_files(inputs_df, ticker, frequency)
+            raise e
 
-        self.inputs_list.append(inputs)
-        inputs_df = pd.DataFrame(self.inputs_list, columns=header)
-        inputs_df.to_csv(f'{self.out_path}{ticker}-{frequency}-' + self.inputs_file, index=False)
-    
+
     def run_optimizer(self):
         for tk in self.tickers:
             for f in self.frequency:
@@ -126,18 +146,23 @@ class GridOptimizer:
                                     for sl in self.stop_loss_type:
                                         for mslp in self.margin_sl_percent:
                                             for slgc in self.sl_grid_count:
-                                                if self.counter >= self.checkpoint:
-                                                    self.process_sim(
-                                                        df=df,
-                                                        ticker=tk,
-                                                        frequency=f,
-                                                        init_bal=ib,
-                                                        init_trade_size=t,
-                                                        grid_pips=g,
-                                                        sl_grid_count=slgc,
-                                                        stop_loss_type=sl,
-                                                        margin_sl_percent=mslp,
-                                                        sizing=s,
-                                                        cash_out_factor=c
-                                                    )  
-                                                self.counter =  self.counter + 1
+                                                for csl in self.cover_stopped_loss:
+                                                    if self.counter >= self.checkpoint:
+                                                        if not self.dummyrun:
+                                                            self.process_sim(
+                                                                df=df,
+                                                                ticker=tk,
+                                                                frequency=f,
+                                                                init_bal=ib,
+                                                                init_trade_size=t,
+                                                                grid_pips=g,
+                                                                sl_grid_count=slgc,
+                                                                stop_loss_type=sl,
+                                                                margin_sl_percent=mslp,
+                                                                sizing=s,
+                                                                cash_out_factor=c,
+                                                                cover_stopped_loss=csl
+                                                            )  
+                                                    self.counter =  self.counter + 1
+        if self.dummyrun:
+            print(f'{self.counter-1} dummies run successfully')

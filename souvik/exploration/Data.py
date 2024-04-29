@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+from tabulate import tabulate
 
 
 class Data:
@@ -85,11 +86,13 @@ class Data:
                 return self.fastdf[self.fcols[column]][index]
         
     def update_fdata(self, column: str, index: int=None, value: float=None):
-        assert value is not None, 'Value cannot be null'
         if index is None:
             assert len(value) == self.fdatalen
             for i in range(self.fdatalen):
                 self.fastdf[self.fcols[column]][i] = value[i]
-                print(i, )
         else:
             self.fastdf[self.fcols[column]][index] = value
+
+    def print_row(self, i: int):
+        print(tabulate([[i] + [self.fastdf[self.fcols[col]][i] for col in self.fcols.keys()]], ['index']+ list(self.fcols.keys()), tablefmt='plain'))
+
