@@ -150,22 +150,22 @@ instruments = "../data/instruments.json"
 
 dummyrun = False
 checkpoint=0
-counter=10000
+counter=11000
 start=0  
 end=10000
 records=['events']
 tickers=['EUR_USD']
 frequency=['M5']
 init_bal=[1000]
-init_trade_size=[1000]
+init_trade_size=[100]
 grid_pips=[10, 20]
-sl_grid_count=[5, 10]
-stop_loss_type=['grid_count', 'grid_count_on_margin', 'oldest_on_margin']
-margin_sl_percent=[0.90]
+sl_grid_count=[2, 3, 5, 10, 20]
+stop_loss_type=['grid_count']
+margin_sl_percent=[0.90, 0.80]
 sizing=['dynamic', 'static']
 cash_out_factor=[None]
 cover_stopped_loss = [True]
-inputs_file='inputs.10.csv'
+inputs_file='inputs.11.csv'
 
 
 if __name__ == '__main__':

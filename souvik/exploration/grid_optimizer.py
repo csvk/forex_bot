@@ -103,12 +103,6 @@ class GridOptimizer:
                     cover_stopped_loss: bool):
         
         sim_name = f'{ticker}-{frequency}-{self.counter}'
-        header = ['sim_name', 'init_trade_size', 'grid_pips', 'stop_loss_type', 'sl_grid_count', 'stoploss_pips', 'margin_sl_percent', 'sizing', 'cash_out_factor', 'cover_stopped_loss']
-        inputs = [sim_name, init_trade_size, grid_pips, stop_loss_type, sl_grid_count, grid_pips * sl_grid_count, margin_sl_percent, sizing, cash_out_factor, cover_stopped_loss]
-        print(tabulate([inputs], header, tablefmt='plain'))
-
-        self.inputs_list.append(inputs)
-        inputs_df = pd.DataFrame(self.inputs_list, columns=header)
 
         self.sim = GridSimulator(
             name=sim_name,
@@ -126,11 +120,25 @@ class GridOptimizer:
             cover_stopped_loss=cover_stopped_loss
         )
 
+        # inputs = [sim_name, init_trade_size, grid_pips, stop_loss_type, sl_grid_count, grid_pips * sl_grid_count, margin_sl_percent, sizing, cash_out_factor, cover_stopped_loss, None]
+        # print(tabulate([inputs], header, tablefmt='plain'))
+
+        def inputs_list():
+            ac_bal = self.sim.d.df[self.sim.name].iloc[-1]['ac_bal']
+            header = ['sim_name', 'init_trade_size', 'grid_pips', 'stop_loss_type', 'sl_grid_count', 'stoploss_pips', 'margin_sl_percent', 'sizing', 'cash_out_factor', 'cover_stopped_loss', 'ac_bal']
+            inputs = [sim_name, init_trade_size, grid_pips, stop_loss_type, sl_grid_count, grid_pips * sl_grid_count, margin_sl_percent, sizing, cash_out_factor, cover_stopped_loss, ac_bal]
+            print(tabulate([inputs], header, tablefmt='plain'))
+            self.inputs_list.append(inputs)
+            return pd.DataFrame(self.inputs_list, columns=header)
+
         try:
+            # header = ['sim_name', 'init_trade_size', 'grid_pips', 'stop_loss_type', 'sl_grid_count', 'stoploss_pips', 'margin_sl_percent', 'sizing', 'cash_out_factor', 'cover_stopped_loss', 'ac_bal']
             self.sim.run_sim()
-            self.save_files(inputs_df, ticker, frequency)
+            # self.inputs_list[-1][-1] = ac_bal
+            # inputs_df.iloc[-1, -1] = ac_bal
+            self.save_files(inputs_list(), ticker, frequency)
         except Exception as e:
-            self.save_files(inputs_df, ticker, frequency)
+            self.save_files(inputs_list(), ticker, frequency)
             raise e
 
 

@@ -1,7 +1,7 @@
 from data import Data
 from tqdm import tqdm
 import pandas as pd
-from numpy import nan
+from numpy import isnan
 
 
 class GridSimulator:
@@ -177,13 +177,13 @@ class GridSimulator:
         else:
             net_bal, margin_used = self.current_ac_values()
             calc_trade_size = int(net_bal * self.sizing_ratio) if self.sizing == 'dynamic' else self.init_trade_size
-            uncovered_pip_position = self.d.fdata('uncovered_pip_position', self.i) \
-                    if self.d.fdata('uncovered_pip_position', self.i) != nan else 0
+            uncovered_pip_position = 0 if isnan(self.d.fdata('uncovered_pip_position', self.i)) \
+                else self.d.fdata('uncovered_pip_position', self.i)
             if self.cover_stopped_loss and uncovered_pip_position > 0:
                 sl_cover_trade_size = uncovered_pip_position / self.tp_pips / 2
                 required_trade_size = max(calc_trade_size, sl_cover_trade_size)
-                allowed_trade_size = max(0, (net_bal / self.MC_PERCENT- margin_used) / (2 * float(self.d.ticker['marginRate'])))
-                trade_size = round(min(required_trade_size, allowed_trade_size), 2)
+                allowed_trade_size = max(0, (net_bal / self.margin_sl_percent - margin_used) / (2 * float(self.d.ticker['marginRate'])))
+                trade_size = int(min(required_trade_size, allowed_trade_size))
             else:
                 trade_size = calc_trade_size
         return trade_size
@@ -226,18 +226,21 @@ class GridSimulator:
         self.d.update_fdata('closed_shorts', self.i, closed_shorts)
 
     def update_uncovered_pip_position(self, trade_no, event: int):
-        uncovered_pip_position = self.d.fdata('uncovered_pip_position', self.i) \
-            if self.d.fdata('uncovered_pip_position', self.i) != nan else 0
+        uncovered_pip_position = 0 if isnan(self.d.fdata('uncovered_pip_position', self.i)) \
+            else self.d.fdata('uncovered_pip_position', self.i)
         if uncovered_pip_position == 0 and event == self.EVENT_ENTRY:
             return
         if event == self.EVENT_SL or event == self.EVENT_MC: # Add on stop loss
-            if type(self.d.fdata('closed_longs', self.i)) == dict:
+            if type(self.d.fdata('closed_longs', self.i)) == dict and \
+                trade_no in self.d.fdata('closed_longs', self.i):
                 stopped_trade = self.d.fdata('closed_longs', self.i)[trade_no]
             else:
                 stopped_trade = self.d.fdata('closed_shorts', self.i)[trade_no]
             # self.sl_pip_position = self.sl_pip_position - stopped_trade[self.SIZE] * stopped_trade[self.PIPS]
-            self.d.update_fdata('uncovered_pip_position', self.i, 
-                                round(uncovered_pip_position - stopped_trade[self.SIZE] * stopped_trade[self.PIPS], 2)) # subtraction because of negative sign of stopped trade pips
+            if stopped_trade[self.PIPS] < 0:
+                self.d.update_fdata('uncovered_pip_position', self.i, 
+                                    round(uncovered_pip_position - 
+                                          stopped_trade[self.SIZE] * stopped_trade[self.PIPS], 2)) # subtraction because of negative sign of stopped trade pips
         elif event == self.EVENT_ENTRY: # Reduce on entry
             covered_pip_position = self.d.fdata('open_longs', self.i)[trade_no][self.SIZE] * self.tp_pips * 2
             uncovered_pip_position = max(0, uncovered_pip_position - covered_pip_position)
